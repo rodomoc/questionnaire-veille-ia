@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questionnaire veille IA – No-code & Automatisation</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .form-wrap {
+      max-width: 660px;
+      margin: 0 auto;
+    }
+
+    .form-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .form-header h1 {
+      font-size: 26px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: .4rem;
+    }
+
+    .form-header p {
+      font-size: 15px;
+      color: #6b6b6b;
+      line-height: 1.6;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #9a9a9a;
+      margin: 2.5rem 0 1.25rem;
+      padding-bottom: .5rem;
+      border-bottom: 1px solid #e2e0db;
+    }
+
+    .q-block {
+      background: #fff;
+      border: 1px solid #e2e0db;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .q-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: .6rem;
+    }
+
+    .q-num {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      background: #7c6ff7;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .q-type {
+      font-size: 12px;
+      color: #9a9a9a;
+      font-style: italic;
+    }
+
+    .q-text {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1a1a1a;
+      line-height: 1.55;
+      margin-bottom: 1rem;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .opt-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid #e2e0db;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #1a1a1a;
+      transition: background .12s, border-color .12s;
+      user-select: none;
+    }
+
+    .opt-label:hover {
+      background: #f5f4f0;
+      border-color: #c8c6c0;
+    }
+
+    .opt-label input[type="radio"],
+    .opt-label input[type="checkbox"] {
+      accent-color: #7c6ff7;
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    .opt-label input[type="radio"]:checked ~ span,
+    .opt-label input[type="checkbox"]:checked ~ span {
+      color: #4a3fbf;
+      font-weight: 500;
+    }
+
+    .opt-label:has(input:checked) {
+      background: #f0eefe;
+      border-color: #a99cf7;
+    }
+
+    .other-input {
+      display: none;
+      margin-top: 8px;
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      border: 1px solid #e2e0db;
+      border-radius: 8px;
+      background: #fafaf8;
+      color: #1a1a1a;
+      outline: none;
+      transition: border-color .12s;
+    }
+
+    .other-input:focus { border-color: #7c6ff7; }
+    .other-input.visible { display: block; }
+
+    .free-text {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      border: 1px solid #e2e0db;
+      border-radius: 8px;
+      background: #fafaf8;
+      color: #1a1a1a;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      transition: border-color .12s;
+    }
+
+    .free-text:focus { border-color: #7c6ff7; }
+
+    .scale-wrap {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: .5rem;
+    }
+
+    .scale-btn {
+      width: 48px;
+      height: 48px;
+      border: 1px solid #e2e0db;
+      border-radius: 8px;
+      background: #fff;
+      color: #1a1a1a;
+      font-size: 15px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .12s, border-color .12s, color .12s;
+    }
+
+    .scale-btn:hover { background: #f5f4f0; border-color: #c8c6c0; }
+
+    .scale-btn.selected {
+      background: #7c6ff7;
+      border-color: #7c6ff7;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #9a9a9a;
+    }
+
+    .submit-wrap {
+      margin-top: 2rem;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      background: #7c6ff7;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background .12s, opacity .12s, transform .1s;
+    }
+
+    .submit-btn:hover { background: #6a5de8; }
+    .submit-btn:active { transform: scale(.99); }
+    .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    .error-msg {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      font-size: 14px;
+    }
+
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 4rem 1rem;
+    }
+
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: #f0eefe;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    .success-icon svg { width: 28px; height: 28px; stroke: #7c6ff7; }
+
+    .success-screen h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: .5rem;
+    }
+
+    .success-screen p {
+      font-size: 15px;
+      color: #6b6b6b;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 500px) {
+      .scale-btn { width: 40px; height: 40px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-wrap">
+  <div class="form-header">
+    <h1>Questionnaire veille IA</h1>
+    <p>No-code &amp; automatisation &mdash; quelques minutes pour partager ton expérience.</p>
+  </div>
+
+  <div id="main-form">
+
+    <!-- Q1 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">1</span>
+        <span class="q-type">Choix unique</span>
+      </div>
+      <p class="q-text">Comment tu décrirais ton activité ?</p>
+      <div class="options" id="q1">
+        <label class="opt-label"><input type="radio" name="q1" value="Solopreneur en IA / no-code"><span>Solopreneur en IA / no-code</span></label>
+        <label class="opt-label"><input type="radio" name="q1" value="Formateur en IA / no-code"><span>Formateur en IA / no-code</span></label>
+        <label class="opt-label"><input type="radio" name="q1" value="Entrepreneur avec une petite équipe"><span>Entrepreneur avec une petite équipe</span></label>
+        <label class="opt-label"><input type="radio" name="q1" value="Consultant en automatisation"><span>Consultant en automatisation</span></label>
+        <label class="opt-label"><input type="radio" name="q1" value="autre"><span>Autre</span></label>
+        <input class="other-input" id="q1-other" placeholder="Précise ton activité…">
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">2</span>
+        <span class="q-type">Choix unique</span>
+      </div>
+      <p class="q-text">Tu publies du contenu sur l'IA ou le no-code (LinkedIn, newsletter, blog) ?</p>
+      <div class="options" id="q2">
+        <label class="opt-label"><input type="radio" name="q2" value="Oui, souvent (plusieurs fois par semaine)"><span>Oui, souvent (plusieurs fois par semaine)</span></label>
+        <label class="opt-label"><input type="radio" name="q2" value="Oui, de temps en temps"><span>Oui, de temps en temps</span></label>
+        <label class="opt-label"><input type="radio" name="q2" value="Pas encore"><span>Pas encore</span></label>
+        <label class="opt-label"><input type="radio" name="q2" value="autre"><span>Autre</span></label>
+        <input class="other-input" id="q2-other" placeholder="Précise…">
+      </div>
+    </div>
+
+    <p class="section-label">Ta veille aujourd'hui</p>
+
+    <!-- Q3 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">3</span>
+        <span class="q-type">Choix multiple</span>
+      </div>
+      <p class="q-text">Comment tu fais, concrètement, pour repérer un sujet tendance avant les autres ?</p>
+      <div class="options" id="q3">
+        <label class="opt-label"><input type="checkbox" name="q3" value="Réseaux sociaux (X, LinkedIn…)"><span>Je suis des comptes / personnes sur les réseaux (X, LinkedIn…)</span></label>
+        <label class="opt-label"><input type="checkbox" name="q3" value="Newsletters spécialisées"><span>Je m'abonne à des newsletters spécialisées</span></label>
+        <label class="opt-label"><input type="checkbox" name="q3" value="Communautés (Discord, Slack, forums)"><span>Je suis des communautés (Discord, Slack, forums)</span></label>
+        <label class="opt-label"><input type="checkbox" name="q3" value="Outils de veille automatisée"><span>J'utilise des outils de veille automatisée</span></label>
+        <label class="opt-label"><input type="checkbox" name="q3" value="Réseau / pairs"><span>Je discute avec mon réseau / mes pairs</span></label>
+        <label class="opt-label"><input type="checkbox" name="q3" value="Par hasard, pas de méthode"><span>Je n'ai pas vraiment de méthode, je tombe dessus par hasard</span></label>
+        <label class="opt-label"><input type="checkbox" name="q3" value="autre"><span>Autre</span></label>
+        <input class="other-input" id="q3-other" placeholder="Précise…">
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">4</span>
+        <span class="q-type">Choix multiple</span>
+      </div>
+      <p class="q-text">Qu'est-ce qui te prend le plus de temps ou t'embête le plus dans cette veille ?</p>
+      <div class="options" id="q4">
+        <label class="opt-label"><input type="checkbox" name="q4" value="Trier le bruit"><span>Trier le bruit pour trouver ce qui est vraiment pertinent</span></label>
+        <label class="opt-label"><input type="checkbox" name="q4" value="Vérifier la fiabilité"><span>Vérifier qu'un sujet est fiable avant d'en parler</span></label>
+        <label class="opt-label"><input type="checkbox" name="q4" value="Trouver le bon angle"><span>Trouver le bon angle pour en parler différemment des autres</span></label>
+        <label class="opt-label"><input type="checkbox" name="q4" value="Trop de sources"><span>Suivre trop de sources en même temps</span></label>
+        <label class="opt-label"><input type="checkbox" name="q4" value="Rédiger le contenu"><span>Rédiger le contenu une fois le sujet trouvé</span></label>
+        <label class="opt-label"><input type="checkbox" name="q4" value="autre"><span>Autre</span></label>
+        <input class="other-input" id="q4-other" placeholder="Précise…">
+      </div>
+    </div>
+
+    <p class="section-label">Le timing</p>
+
+    <!-- Q5 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">5</span>
+        <span class="q-type">Choix unique + champ libre</span>
+      </div>
+      <p class="q-text">Ça t'est déjà arrivé de rater le bon moment pour publier sur un sujet qui montait ?</p>
+      <div class="options" id="q5">
+        <label class="opt-label"><input type="radio" name="q5" value="Oui, souvent"><span>Oui, souvent</span></label>
+        <label class="opt-label"><input type="radio" name="q5" value="Oui, une ou deux fois"><span>Oui, ça m'est arrivé une ou deux fois</span></label>
+        <label class="opt-label"><input type="radio" name="q5" value="Non, jamais ou presque"><span>Non, jamais ou presque</span></label>
+      </div>
+      <textarea class="free-text" id="q5-details" placeholder="Raconte ce qui s'est passé (facultatif)…"></textarea>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">6</span>
+        <span class="q-type">Choix unique</span>
+      </div>
+      <p class="q-text">Quand tu choisis un sujet, qu'est-ce qui compte le plus ?</p>
+      <div class="options" id="q6">
+        <label class="opt-label"><input type="radio" name="q6" value="Visibilité / buzz"><span>Qu'il buzze, qu'il génère de la visibilité</span></label>
+        <label class="opt-label"><input type="radio" name="q6" value="Retour direct (clients, ventes, leads)"><span>Qu'il me rapporte directement (clients, ventes, leads)</span></label>
+        <label class="opt-label"><input type="radio" name="q6" value="Un mélange des deux"><span>Un mélange des deux, à parts égales</span></label>
+        <label class="opt-label"><input type="radio" name="q6" value="autre"><span>Autre</span></label>
+        <input class="other-input" id="q6-other" placeholder="Précise…">
+      </div>
+    </div>
+
+    <p class="section-label">Ce que tu voudrais</p>
+
+    <!-- Q7 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">7</span>
+        <span class="q-type">Choix multiple</span>
+      </div>
+      <p class="q-text">Si la veille et la rédaction te prenaient deux fois moins de temps, tu ferais quoi de ce temps-là ?</p>
+      <div class="options" id="q7">
+        <label class="opt-label"><input type="checkbox" name="q7" value="Produire plus de contenu"><span>Je produirais plus de contenu</span></label>
+        <label class="opt-label"><input type="checkbox" name="q7" value="Clients / business"><span>Je passerais plus de temps avec mes clients / mon business</span></label>
+        <label class="opt-label"><input type="checkbox" name="q7" value="Me former sur autre chose"><span>Je me formerais sur autre chose</span></label>
+        <label class="opt-label"><input type="checkbox" name="q7" value="Me reposer"><span>Je me reposerais, tout simplement</span></label>
+        <label class="opt-label"><input type="checkbox" name="q7" value="autre"><span>Autre</span></label>
+        <input class="other-input" id="q7-other" placeholder="Précise…">
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">8</span>
+        <span class="q-type">Choix multiple</span>
+      </div>
+      <p class="q-text">Qu'est-ce qui te ferait dire "ça, c'est exactement ce dont j'ai besoin" pour un outil comme celui-ci ?</p>
+      <div class="options" id="q8">
+        <label class="opt-label"><input type="checkbox" name="q8" value="Alerter avant saturation"><span>Qu'il me prévienne avant que le sujet soit saturé</span></label>
+        <label class="opt-label"><input type="checkbox" name="q8" value="Contenu prêt à publier"><span>Qu'il me propose directement un contenu prêt à publier</span></label>
+        <label class="opt-label"><input type="checkbox" name="q8" value="Potentiel de revenu"><span>Qu'il me dise si le sujet a un vrai potentiel de revenu</span></label>
+        <label class="opt-label"><input type="checkbox" name="q8" value="Garder mon style / ma voix"><span>Qu'il garde mon style et ma voix dans ce qu'il génère</span></label>
+        <label class="opt-label"><input type="checkbox" name="q8" value="Gagner du temps"><span>Qu'il me fasse gagner du temps, point final</span></label>
+        <label class="opt-label"><input type="checkbox" name="q8" value="autre"><span>Autre</span></label>
+        <input class="other-input" id="q8-other" placeholder="Précise…">
+      </div>
+    </div>
+
+    <p class="section-label">Pour finir</p>
+
+    <!-- Q9 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">9</span>
+        <span class="q-type">Choix multiple</span>
+      </div>
+      <p class="q-text">Quel format te réussit le mieux aujourd'hui ?</p>
+      <div class="options" id="q9">
+        <label class="opt-label"><input type="checkbox" name="q9" value="Newsletter"><span>Newsletter</span></label>
+        <label class="opt-label"><input type="checkbox" name="q9" value="Post LinkedIn"><span>Post LinkedIn</span></label>
+        <label class="opt-label"><input type="checkbox" name="q9" value="Thread (X / Twitter)"><span>Thread (X / Twitter)</span></label>
+        <label class="opt-label"><input type="checkbox" name="q9" value="Vidéo"><span>Vidéo</span></label>
+        <label class="opt-label"><input type="checkbox" name="q9" value="Formation / contenu pédagogique"><span>Formation / contenu pédagogique</span></label>
+        <label class="opt-label"><input type="checkbox" name="q9" value="autre"><span>Autre</span></label>
+        <input class="other-input" id="q9-other" placeholder="Précise…">
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="q-block">
+      <div class="q-meta">
+        <span class="q-num">10</span>
+        <span class="q-type">Échelle de 1 à 10</span>
+      </div>
+      <p class="q-text">De 1 à 10, à quel point un outil qui résout ce problème de timing t'intéresserait ?</p>
+      <div class="scale-wrap" id="scale-q10"></div>
+      <div class="scale-labels">
+        <span>Pas du tout</span>
+        <span>Absolument</span>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button class="submit-btn" id="submit-btn">Envoyer mes réponses</button>
+      <div class="error-msg" id="error-msg">
+        Une erreur s'est produite lors de l'envoi. Vérifie l'URL Apps Script dans le code et réessaie.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Écran de confirmation -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <h2>Merci pour tes réponses !</h2>
+    <p>Tes retours ont bien été enregistrés.<br>À très bientôt.</p>
+  </div>
+
+</div>
+
+<script>
+  // ─────────────────────────────────────────────
+  // CONFIGURATION — colle ici l'URL de ton Apps Script
+  // ─────────────────────────────────────────────
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKl0YuZEN4JqMR3gyV1PZtIZQCW30_2ujD43x7cSvnzkf0apZkPDzA1i5cWVdm4xyFMw/exec';
+  // ─────────────────────────────────────────────
+
+  // Champs "Autre" dynamiques
+  const otherGroups = ['q1','q2','q3','q4','q6','q7','q8','q9'];
+  otherGroups.forEach(id => {
+    const container = document.getElementById(id);
+    const otherInput = document.getElementById(id + '-other');
+    if (!container || !otherInput) return;
+    container.addEventListener('change', e => {
+      const inp = e.target;
+      if (inp.value === 'autre') {
+        otherInput.classList.toggle('visible', inp.checked);
+      }
+      if (inp.type === 'radio' && inp.value !== 'autre') {
+        otherInput.classList.remove('visible');
+      }
+    });
+  });
+
+  // Échelle 1-10
+  const scaleWrap = document.getElementById('scale-q10');
+  let selectedScale = null;
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'scale-btn';
+    btn.textContent = i;
+    btn.addEventListener('click', () => {
+      selectedScale = i;
+      scaleWrap.querySelectorAll('.scale-btn').forEach((b, idx) => {
+        b.classList.toggle('selected', idx + 1 === i);
+      });
+    });
+    scaleWrap.appendChild(btn);
+  }
+
+  // Collecte des réponses
+  function getRadio(name) {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    if (!checked) return '';
+    if (checked.value === 'autre') {
+      const other = document.getElementById(name + '-other');
+      return other ? other.value.trim() : '';
+    }
+    return checked.value;
+  }
+
+  function getCheckboxes(name) {
+    const checked = [...document.querySelectorAll(`input[name="${name}"]:checked`)];
+    return checked.map(c => {
+      if (c.value === 'autre') {
+        const other = document.getElementById(name + '-other');
+        return (other && other.value.trim()) ? other.value.trim() : 'Autre';
+      }
+      return c.value;
+    }).join(', ');
+  }
+
+  // Soumission
+  document.getElementById('submit-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('submit-btn');
+    const errorMsg = document.getElementById('error-msg');
+    errorMsg.style.display = 'none';
+
+    const payload = {
+      q1:        getRadio('q1'),
+      q2:        getRadio('q2'),
+      q3:        getCheckboxes('q3'),
+      q4:        getCheckboxes('q4'),
+      q5:        getRadio('q5'),
+      q5details: document.getElementById('q5-details').value.trim(),
+      q6:        getRadio('q6'),
+      q7:        getCheckboxes('q7'),
+      q8:        getCheckboxes('q8'),
+      q9:        getCheckboxes('q9'),
+      q10:       selectedScale ? String(selectedScale) : ''
+    };
+
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours…';
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      document.getElementById('main-form').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+    } catch (err) {
+      errorMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Envoyer mes réponses';
+    }
+  });
+</script>
+
+</body>
+</html>
